@@ -2,7 +2,7 @@
 #GET:We Have To Send Some Data Back
 #In Browser Perspective its opposite
 
-from flask import Flask,jsonify,request
+from flask import Flask,jsonify,request,render_template
 app=Flask(__name__)
 
 
@@ -18,6 +18,10 @@ stores=[
     
     }
 ]
+
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 
 @app.route("/store",methods=["POST"])
@@ -44,7 +48,7 @@ def get_stores():
 def create_item_in_store():
     request_data=request.get_json()
     for store in stores:
-        if store["name"]=name:
+        if store["name"]==name:
             new_item={
                 'name':request_data["name"],
                 "price":request_data["price"]
