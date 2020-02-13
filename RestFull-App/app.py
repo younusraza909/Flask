@@ -13,6 +13,9 @@ jwt=JWT(app,authenticate,identity)  #/auth
 items=[]
 
 class Item(Resource):
+        parser=reqparse.RequestParser()
+        parser.add_argument("price",type=float,help="This Field Cannot Be Blank",required=True)
+
     @jwt_required()
     def get(self,name):
        item=next(filter(lambda x:x["name"]==name,items),None)
@@ -22,7 +25,8 @@ class Item(Resource):
     def post(self,name):
         if next(filter(lambda x:x["name"]==name,items),None):
             return {"message":"An item With {} already exist.".format(name)},400
-        data=request.get_json()
+
+        data=Item.parser.parse_args()
         item={"name":name,"price":data["price"]}
         items.append(item) 
         return item ,201 #hhtp code for created
@@ -33,11 +37,10 @@ class Item(Resource):
         return {"message":"item Deleted"}
 
     def put(self,name):
-        parser=reqparse.RequestParser()
-        parser.add_argument("price",type=float,help="This Field Cannot Be Blank",required=True)
-        data=parser.parse_args()
-
         
+            
+        data=Item.parser.parse_args()
+
         item=next(filter(lambda x:x["name"]==name,items),None)
         if item is None:
             item={"name":name,"price":data["price"]}
