@@ -2,6 +2,7 @@ from flask import Flask,request
 from flask_restful import Resource,Api,reqparse
 from flask_jwt import JWT,jwt_required
 from security import authenticate, identity
+from user import userRegister
 
 
 app=Flask(__name__)
@@ -54,5 +55,6 @@ class ItemList(Resource):
 
 api.add_resource(Item,'/item/<string:name>')
 api.add_resource(ItemList,"/items")
+api.add_resource(userRegister,"/register")
 
 app.run(port=5000,debug=True)
