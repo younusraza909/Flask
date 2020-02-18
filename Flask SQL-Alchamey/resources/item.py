@@ -6,6 +6,9 @@ from  models.item import ItemModel
 class Item(Resource):
         parser=reqparse.RequestParser()
         parser.add_argument("price",type=float,help="This Field Cannot Be Blank",required=True) 
+        parser.add_argument("store_id",type=int,help="Every item needs a store id",required=True) 
+
+
 
 
         @jwt_required()
@@ -21,7 +24,7 @@ class Item(Resource):
                 return {"message":"An item With {} already exist.".format(name)},400
 
             data=Item.parser.parse_args()
-            item=ItemModel(name,data["price"])
+            item=ItemModel(name,**data)
             try:
                 item.save_to_db()
             except:
@@ -43,7 +46,7 @@ class Item(Resource):
             item=ItemModel.find_by_name(name)
             
             if item is None:
-                item=ItemModel(name,data["price"])
+                item=ItemModel(name,**data)
 
             else:
                 item.price=data["price"]
@@ -56,13 +59,5 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        connection=sqlite3.connect("data.db")
-        cursor=connection.cursor()
-        query="SELECT * FROM items"
-        result=cursor.execute(query)
-        items=[]
-        for i in result:
-            items.append({"name":i[1],"price":i[2]})
-        
-        connection.close()  
-        return{"items":items}
+        return {"items":[item.json for item in ItemModel.query.all()]}
+        #return {"items":list(map(lambda x:x.json(),ItemModel.quesry.all()))}

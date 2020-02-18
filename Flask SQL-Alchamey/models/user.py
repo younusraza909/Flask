@@ -11,7 +11,6 @@ class UserModel(db.Model):
 
 
     def __init__(self,username,password):
-        self.id=_id
         self.username=username
         self.password=password
 
